@@ -4,8 +4,6 @@ pipeline {
     agent any
     environment {
         IMAGE_NAME = 'clementleeky/my-repo:1.0'
-        DOCKER_PWD = 'clementleeky'
-        DOCKER_USER = 'clementleeky'
     }
 
     stages {
@@ -21,8 +19,8 @@ pipeline {
         stage ('Login and Push to Docker Hub') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: "${DOCKER_PWD}", usernameVariable: "${DOCKER_USER}")]) {
-                        sh "docker login "
+                    withCredentials([string(credentialsId:'docker-hub-repo', user: 'username', pwd: 'password')]) {
+                        sh "docker login -u ${username} -p ${password}"
                         sh "docker push clementleeky/my-repo"
                     }
                 }
