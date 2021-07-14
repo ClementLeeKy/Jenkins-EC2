@@ -2,6 +2,9 @@
 
 pipeline {
     agent any
+    environment {
+        IMAGE_NAME = 'clementleeky/my-repo'
+    }
     stages {
         stage('test') {
             steps {
@@ -23,10 +26,11 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying Docker Image to EC2 Server'
-                    def dockerComposeCmd = "docker-compose -f docker-compose.yaml up --detach"
+                    def shellCmd = "bash ./server-cmds.sh"
                     sshagent(['ec2-server-key']) {
+                       sh "scp server-cmds.sh ec2-user@13.250.60.54:/home/ec2-user"
                        sh "scp docker-compose.yaml ec2-user@13.250.60.54:/home/ec2-user"   
-                       sh "ssh -o StrictHostKeyChecking=no ec2-user@13.250.60.54 ${dockerComposeCmd}"
+                       sh "ssh -o StrictHostKeyChecking=no ec2-user@13.250.60.54 ${shellCmd}"
                     }
                 }
             }
